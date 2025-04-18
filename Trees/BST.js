@@ -37,11 +37,24 @@ class BinarySearchTree {
             tree.right = postOrderTraverse(node.right);
             tree.value = node.value;
             return tree;
-        }
+        };
+        const levelOrderTraverse = (node) => {
+            if (!node) return [];
+            const queue = [node];
+            const data = [];
+            while (queue.length > 0) {
+                const curr = queue.shift()
+                data.push(curr.value);
+                if (curr.left) queue.push(curr.left);
+                if (curr.right) queue.push(curr.right);
+            };
+            return data;
+        };
         let data = null;
         if (mode == 'pre_order') data = JSON.stringify(preOrderTraverse((this.root)));
         if (mode == 'post_order') data = JSON.stringify(postOrderTraverse((this.root)));
         if (mode == 'in_order') data = JSON.stringify(inOrderTraverse((this.root)));
+        if (mode == 'level_order') data = levelOrderTraverse(this.root);
         console.log(`${mode}: ${data}`);
         return data;
     };
@@ -171,6 +184,7 @@ order.forEach(e => {
 tree.print('pre_order');
 tree.print('post_order');
 tree.print('in_order');
+tree.print('level_order')
 // tree.height();
 // tree.isBalanced();
 // tree.insert(2);
