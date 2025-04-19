@@ -15,6 +15,7 @@ class BinarySearchTree {
     };
 
     print(mode = 'pre_order') {
+        // Node -> Left -> Right
         const preOrderTraverse = (node) => {
             if (!node) return;
             const tree = {value: node.value};
@@ -22,6 +23,7 @@ class BinarySearchTree {
             tree.right = node.right === null ? null : preOrderTraverse(node.right);
             return tree;
         };
+        // Left -> Node -> Right
         const inOrderTraverse = (node) => {
             if (!node) return;
             let tree = {};
@@ -30,6 +32,7 @@ class BinarySearchTree {
             tree.right = inOrderTraverse(node.right);
             return tree;
         };
+        // Left -> Right -> Node
         const postOrderTraverse = (node) => {
             if (!node) return;
             let tree = {};
@@ -38,6 +41,7 @@ class BinarySearchTree {
             tree.value = node.value;
             return tree;
         };
+        // Node -> Left -> Right (in queue)
         const levelOrderTraverse = (node) => {
             if (!node) return [];
             const queue = [node];
@@ -146,7 +150,7 @@ class BinarySearchTree {
         const leftNodeBalance = this.traverse(node.left, checkBalance);
         const rightNodeBalance = this.traverse(node.right, checkBalance);
         const diff = Math.abs(leftNodeBalance - rightNodeBalance);
-        if (checkBalance) this.balanced = diff > 1 ? true : this.balanced;
+        if (checkBalance) this.balanced = diff > 1 ? false : this.balanced;
         return Math.max(leftNodeBalance, rightNodeBalance) + 1;
     };
 
@@ -165,26 +169,109 @@ class BinarySearchTree {
         return res;
     };
 
-    // remove(){}
+    checkPathSum(target, pathSum, node) {
+        if (!node) {
+            return false;
+        };
+
+        pathSum += node.value;
+        if (!node.left && !node.right) {
+            return pathSum == target;
+        };
+
+        return (this.checkPathSum(target, pathSum, node.left) || this.checkPathSum(target, pathSum, node.right));
+    };
+
+    pathSum(target, node = this.root) {
+        if (!node) {
+            return false;
+        };
+
+        return this.checkPathSum(target, 0, node);
+    };
+    
+    remove(value) {
+        if (!this.root) return false;
+
+        let currentNode = this.root;
+        let parentNode = null;
+        
+        while (currentNode) {
+            if (value < currentNode.value) {
+                parentNode = currentNode;
+                currentNode = currentNode.left;
+            } else if (value > currentNode.value) {
+                parentNode = currentNode;
+                currentNode = currentNode.right;
+            } else {
+                // Node to delete found
+                // Case 1: No right child.
+                if (currentNode.right === null) {
+                    if (parentNode === null) {
+                        this.root = currentNode.left;
+                    } else {
+                        if (currentNode.value < parentNode.value) {
+                            parentNode.left = currentNode.left;
+                        } else {
+                            parentNode.right = currentNode.left;
+                        }
+                    }
+                }
+                // Case 2: Right child with no left child.
+                else if (currentNode.right.left === null) {
+                    currentNode.right.left = currentNode.left;
+                    if (parentNode === null) {
+                        this.root = currentNode.right;
+                    } else {
+                        if (currentNode.value < parentNode.value) {
+                            parentNode.left = currentNode.right;
+                        } else {
+                            parentNode.right = currentNode.right;
+                        }
+                    }
+                }
+                // Case 3: Right child that has a left child.
+                else {
+                    // Find the leftmost node in the right subtree.
+                    let leftmost = currentNode.right.left;
+                    let leftmostParent = currentNode.right;
+                    while (leftmost.left !== null) {
+                        leftmostParent = leftmost;
+                        leftmost = leftmost.left;
+                    }
+                    // Parent's left subtree now becomes leftmost's right subtree.
+                    leftmostParent.left = leftmost.right;
+                    // Replace currentNode with leftmost.
+                    leftmost.left = currentNode.left;
+                    leftmost.right = currentNode.right;
+                    if (parentNode === null) {
+                        this.root = leftmost;
+                    } else {
+                        if (currentNode.value < parentNode.value) {
+                            parentNode.left = leftmost;
+                        } else {
+                            parentNode.right = leftmost;
+                        }
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    };
 };
 
 const tree = new BinarySearchTree();
-/* 
-              9
-          /      \
-        4          20
-       /   \     /    \
-    1       6  15     170
-*/
 // initial order of inertions
 order = [9, 4, 6, 20, 170, 15, 1];
 order.forEach(e => {
     tree.insert(e);
 });
-tree.print('pre_order');
-tree.print('post_order');
 tree.print('in_order');
-tree.print('level_order')
+tree.remove(170);
+tree.print('in_order');
+tree.remove(4);
+tree.print('in_order');
 // tree.height();
 // tree.isBalanced();
 // tree.insert(2);
