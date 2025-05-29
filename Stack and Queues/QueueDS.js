@@ -12,6 +12,7 @@ class Queue {
         this.length = 0;
     };
 
+    // O(i) -> O(n)
     peek(i) {
         if (i < 0 || this.length == 0 || i > this.length - 1) return undefined;
         if (i == 0) return this.first.value;
@@ -25,6 +26,7 @@ class Queue {
         return currNode.value;
     }
 
+    // O(1)
     enqueue(value) {
         const newNode = new Node(value);
         if (this.length == 0) {
@@ -37,6 +39,7 @@ class Queue {
         this.length++;
     }
 
+    // O(1)
     dequeue() {
         if (this.length == 0) return undefined;
         const data = this.first.value;
@@ -48,6 +51,7 @@ class Queue {
         return data;
     };
 
+    // O(n)
     print() {
         if (this.length == 0) {
             console.log([]);
