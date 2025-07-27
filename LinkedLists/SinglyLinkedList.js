@@ -110,6 +110,21 @@ class LinkedList {
             }
         }
     };
+
+    reverseList() {
+        let prev = null;
+        let current = this.head;
+        this.tail = this.head;
+
+        while(current) {
+            const next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+        };
+
+        this.head = prev;
+    }
 };
 
 // new list with val 10
@@ -142,6 +157,9 @@ myLinkedList.printLength();
 myLinkedList.printList();
 myLinkedList.removeDuplicates();
 myLinkedList.printLength();
+myLinkedList.printList();
+
+myLinkedList.reverseList();
 myLinkedList.printList();
 
 // target: print specific
